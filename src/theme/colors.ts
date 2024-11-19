@@ -38,5 +38,13 @@ export const colors = {
     },
     "surfaceDisabled": "rgba(32, 26, 26, 0.12)",
     "onSurfaceDisabled": "rgba(32, 26, 26, 0.38)",
-    "backdrop": "rgba(59, 45, 45, 0.4)"
+    "backdrop": "rgba(59, 45, 45, 0.4)",
+    study: {
+        background: "rgb(185, 242, 150)",
+        text: "rgb(8, 33, 0)",
+    },
+    rest: {
+        background: "rgb(255, 222, 165)",
+        text: "rgb(38, 25, 0)",
+    }
 }

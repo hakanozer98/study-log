@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router'
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { colors } from '@/src/theme/colors';
 
 const TabsLayout = () => {
@@ -18,10 +19,10 @@ const TabsLayout = () => {
             }}
         >
             <Tabs.Screen
-                name='home'
+                name='timer'
                 options={{
-                    title: 'Home',
-                    tabBarIcon: ({ color }) => <FontAwesome name='home' color={color} size={24} />
+                    title: 'Timer',
+                    tabBarIcon: ({ color }) => <FontAwesome6 name='stopwatch' color={color} size={24} />
                 }}
             />
             <Tabs.Screen
