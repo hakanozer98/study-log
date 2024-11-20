@@ -1,16 +1,16 @@
 import { supabase } from '../lib/supabase'
 import { StudyLog, Interval } from '@/src/types/database'
 
-export async function createStudyLog(title: string, categoryId?: string): Promise<StudyLog> {
+export const createStudyLog = async (title: string, categoryId?: string) => {
   const { data, error } = await supabase
     .from('study_log')
-    .insert({ title, category_id: categoryId })
+    .insert([{ title, category_id: categoryId }])
     .select()
-    .single()
+    .single();
 
-  if (error) throw error
-  return data
-}
+  if (error) throw error;
+  return data;
+};
 
 export async function addInterval(
   studyLogId: string,
@@ -32,3 +32,24 @@ export async function addInterval(
   if (error) throw error
   return data
 }
+
+export const getCategories = async () => {
+  const { data, error } = await supabase
+    .from('category')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) throw error;
+  return data;
+};
+
+export const createCategory = async (name: string, color: string, iconName: string) => {
+  const { data, error } = await supabase
+    .from('category')
+    .insert([{ name, color, icon_name: iconName }])
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};

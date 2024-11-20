@@ -15,3 +15,10 @@ export interface Interval {
     end_time: string;
     created_at: string;
 }
+
+export interface Category {
+    id: string;
+    name: string;
+    color: string;
+    icon_name: string;
+}

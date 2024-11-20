@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { Redirect, Stack } from 'expo-router'
 import { useAuth } from '@/src/providers/AuthProvider'
@@ -11,8 +10,10 @@ const RootLayout = () => {
   }
 
   return (
-    <Stack>
-        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+    <Stack screenOptions={{headerShown: false}}>
+        <Stack.Screen name='(tabs)' />
+        <Stack.Screen name='categories' />
+        <Stack.Screen name='add-category' />
     </Stack>
   )
 }

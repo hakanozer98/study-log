@@ -15,7 +15,8 @@ const TabsLayout = () => {
                     borderTopWidth: 0,
                     shadowColor: 'transparent',
                     elevation: 0,
-                }
+                },
+                tabBarHideOnKeyboard: true,
             }}
         >
             <Tabs.Screen
