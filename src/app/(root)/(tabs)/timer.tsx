@@ -184,18 +184,24 @@ const Timer = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {timerState === 'idle' ? (
+        <View style={styles.titleContainer}>
           <CustomInput
             label=''
             value={title}
             onChangeText={setTitle}
             placeholder="Enter session title"
+            style={[
+              styles.titleInput,
+              { opacity: timerState === 'idle' ? 1 : 0 }
+            ]}
           />
-        ) : (
-          <Text style={styles.sessionTitle}>
+          <Text style={[
+            styles.sessionTitle,
+            { opacity: timerState === 'idle' ? 0 : 1 }
+          ]}>
             {title.trim() || 'Study Session'}
           </Text>
-        )}
+        </View>
         
         <Text style={styles.currentTime}>{getCurrentSessionTime()}</Text>
         <Text style={styles.timerState}>
@@ -203,66 +209,73 @@ const Timer = () => {
             timerState === 'studying' ? 'Studying' : 'Resting'}
         </Text>
 
-        <Pressable 
-          style={styles.categoryButton} 
-          onPress={() => {
-            if (selectedCategory) {
-              setSelectedCategory(null);
-              router.push('/(root)/(tabs)/timer');
-            } else {
-              router.navigate('/(root)/categories');
-            }
-          }}
-        >
-          <MaterialCommunityIcons
-            name={selectedCategory ? 'folder' : 'folder-plus'}
-            size={20}
-            color={colors.primary}
-          />
-          <Text style={styles.categoryButtonText}>
-            {selectedCategory ? selectedCategory.name : 'Add Category'}
-          </Text>
-          {selectedCategory && (
+        <View style={styles.actionContainer}>
+          <Pressable 
+            style={styles.categoryButton} 
+            onPress={() => {
+              if (selectedCategory) {
+                setSelectedCategory(null);
+                router.push('/(root)/(tabs)/timer');
+              } else {
+                router.navigate('/(root)/categories');
+              }
+            }}
+          >
             <MaterialCommunityIcons
-              name="close"
+              name={selectedCategory ? 'folder' : 'folder-plus'}
               size={20}
               color={colors.primary}
             />
-          )}
-        </Pressable>
-
-        {timerState !== 'idle' && (
-          <Pressable
-            style={[styles.button, styles.finishButton]}
-            onPress={handleFinish}
-          >
-            <Text style={[styles.buttonText, { color: colors.onPrimary }]}>
-              Finish Session
+            <Text style={styles.categoryButtonText}>
+              {selectedCategory ? selectedCategory.name : 'Add Category'}
             </Text>
+            {selectedCategory && (
+              <MaterialCommunityIcons
+                name="close"
+                size={20}
+                color={colors.primary}
+              />
+            )}
           </Pressable>
-        )}
 
-        <Pressable
-          style={[
-            styles.button,
-            {
-              backgroundColor: timerState === 'studying'
-                ? colors.study.background
-                : timerState === 'resting'
-                  ? colors.rest.background
-                  : colors.primaryContainer,
-              opacity: isLoading ? 0.7 : 1
-            }
-          ]}
-          onPress={handleTimerPress}
-          disabled={isLoading}
-        >
-          <Text style={styles.buttonText}>
-            {isLoading ? 'Saving...' :
-              timerState === 'idle' ? 'Start Studying' :
-                timerState === 'studying' ? 'Take a Rest' : 'Continue Studying'}
-          </Text>
-        </Pressable>
+          <View style={styles.buttonContainer}>
+            <Pressable
+              style={[
+                styles.button,
+                styles.finishButton,
+                { opacity: timerState === 'idle' ? 0 : 1 }
+              ]}
+              onPress={handleFinish}
+              disabled={timerState === 'idle'}
+            >
+              <Text style={[styles.buttonText, { color: colors.onPrimary }]}>
+                Finish Session
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[
+                styles.button,
+                {
+                  backgroundColor: timerState === 'studying'
+                    ? colors.study.background
+                    : timerState === 'resting'
+                      ? colors.rest.background
+                      : colors.primaryContainer,
+                  opacity: isLoading ? 0.7 : 1
+                }
+              ]}
+              onPress={handleTimerPress}
+              disabled={isLoading}
+            >
+              <Text style={styles.buttonText}>
+                {isLoading ? 'Saving...' :
+                  timerState === 'idle' ? 'Start Studying' :
+                    timerState === 'studying' ? 'Take a Rest' : 'Continue Studying'}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
 
         <View style={styles.statsContainer}>
           {renderStatCard(
@@ -292,28 +305,28 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   currentTime: {
-    fontSize: 64,
+    fontSize: 72,
     fontWeight: 'bold',
     color: colors.onSurface,
-    marginTop: 40,
-    marginBottom: 8,
+    marginTop: 20,
+    marginBottom: 4,
   },
   timerState: {
-    fontSize: 20,
+    fontSize: 18,
     color: colors.onSurfaceVariant,
-    marginBottom: 40,
+    marginBottom: 24,
   },
   button: {
-    paddingHorizontal: 32,
-    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     borderRadius: 24,
-    marginBottom: 16,
+    marginBottom: 12,
     minWidth: 200,
     alignItems: 'center',
   },
   finishButton: {
     backgroundColor: colors.primary,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   buttonText: {
     fontSize: 16,
@@ -322,17 +335,17 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     width: '100%',
-    marginTop: 40,
+    marginTop: 24,
     flexDirection: 'row',
-    gap: 12,
+    gap: 8,
     justifyContent: 'center',
   },
   statCard: {
     flex: 1,
-    padding: 16,
+    padding: 12,
     backgroundColor: colors.surfaceVariant,
     borderRadius: 12,
-    minWidth: 100,
+    minWidth: 90,
     justifyContent: 'space-between',
   },
   statHeader: {
@@ -355,10 +368,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surfaceVariant,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 20,
-    marginBottom: 40,
+    marginBottom: 24,
     gap: 8,
   },
   categoryButtonText: {
@@ -368,14 +381,35 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     alignItems: 'center',
-    padding: 20,
+    padding: 16,
+    minHeight: '100%',
   },
   sessionTitle: {
+    position: 'absolute',
     fontSize: 24,
     fontWeight: '600',
     color: colors.onSurface,
-    marginBottom: 16,
     textAlign: 'center',
+  },
+  titleContainer: {
+    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  titleInput: {
+    position: 'absolute',
+    width: '100%',
+  },
+  actionContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  buttonContainer: {
+    width: '100%',
+    alignItems: 'center',
+    minHeight: 100, 
   },
 })
 

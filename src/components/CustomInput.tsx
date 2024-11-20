@@ -1,6 +1,5 @@
-
 import React from 'react'
-import { View, TextInput, Text, StyleSheet } from 'react-native'
+import { View, TextInput, Text, StyleSheet, ViewStyle, StyleProp } from 'react-native'
 import { colors } from '../theme/colors'
 
 interface CustomInputProps {
@@ -9,11 +8,19 @@ interface CustomInputProps {
   onChangeText: (text: string) => void
   placeholder?: string
   secureTextEntry?: boolean
+  style?: StyleProp<ViewStyle>
 }
 
-export const CustomInput = ({ label, value, onChangeText, placeholder, secureTextEntry }: CustomInputProps) => {
+export const CustomInput = ({ 
+  label, 
+  value, 
+  onChangeText, 
+  placeholder, 
+  secureTextEntry,
+  style
+}: CustomInputProps) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
         style={styles.input}
