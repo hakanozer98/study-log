@@ -166,15 +166,15 @@ const Timer = () => {
 
   const renderStatCard = (icon: string, label: string, time: string) => (
     <View style={styles.statCard}>
-      <MaterialCommunityIcons
-        name={icon as any}
-        size={24}
-        color={colors.primary}
-      />
-      <View>
+      <View style={styles.statHeader}>
+        <MaterialCommunityIcons
+          name={icon as any}
+          size={24}
+          color={colors.primary}
+        />
         <Text style={styles.statLabel}>{label}</Text>
-        <Text style={styles.statTime}>{time}</Text>
       </View>
+      <Text style={styles.statTime}>{time}</Text>
     </View>
   )
 
@@ -323,25 +323,33 @@ const styles = StyleSheet.create({
   statsContainer: {
     width: '100%',
     marginTop: 40,
+    flexDirection: 'row',
     gap: 12,
+    justifyContent: 'center',
   },
   statCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flex: 1,
     padding: 16,
     backgroundColor: colors.surfaceVariant,
     borderRadius: 12,
-    gap: 16,
+    minWidth: 100,
+    justifyContent: 'space-between',
+  },
+  statHeader: {
+    alignItems: 'center',
+    gap: 4,
   },
   statLabel: {
     fontSize: 14,
     color: colors.onSurfaceVariant,
-    marginBottom: 2,
+    textAlign: 'center',
   },
   statTime: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: colors.onSurface,
+    textAlign: 'center',
+    marginTop: 8,
   },
   categoryButton: {
     flexDirection: 'row',
