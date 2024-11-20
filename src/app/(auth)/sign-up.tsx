@@ -6,11 +6,36 @@ import { colors } from '../../theme/colors'
 import { CustomInput } from '../../components/CustomInput'
 import { CustomButton } from '../../components/CustomButton'
 import { Link } from 'expo-router'
+import { makeRedirectUri } from "expo-auth-session";
+import * as QueryParams from "expo-auth-session/build/QueryParams";
+import * as Linking from 'expo-linking'
 
 const SignUp = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const redirectTo = makeRedirectUri()
+
+  const createSessionFromUrl = async (url: string) => {
+    const { params, errorCode } = QueryParams.getQueryParams(url);
+
+    if (errorCode) throw new Error(errorCode);
+    const { access_token, refresh_token } = params;
+
+    if (!access_token) return;
+
+    const { data, error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
+    if (error) throw error;
+    return data.session;
+  };
+
+  const url = Linking.useURL()
+  if (url) {
+    createSessionFromUrl(url)
+  }
 
   async function signUpWithEmail() {
     setLoading(true)
@@ -20,9 +45,16 @@ const SignUp = () => {
     } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+        emailRedirectTo: redirectTo,
+      },
     })
 
     if (error) Alert.alert(error.message)
+    else {
+      Alert.alert('Check your email for the confirmation link!')
+    }
+    setLoading(false)
   }
 
   return (
