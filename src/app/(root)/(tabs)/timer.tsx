@@ -67,6 +67,14 @@ const Timer = () => {
       } else {
         if (!currentLogId) throw new Error('No active study log')
 
+        // Save interval to database
+        await addInterval(
+          currentLogId,
+          timerState === 'studying',
+          new Date(startTime),
+          new Date(now)
+        )
+
         // Update local state
         const mappedInterval: TimerInterval = {
           type: timerState === 'studying' ? 'study' : 'rest',
@@ -103,13 +111,15 @@ const Timer = () => {
       setIsLoading(true)
       const now = Date.now()
 
-      // Save final interval
-      await addInterval(
-        currentLogId,
-        timerState === 'studying',
-        new Date(startTime),
-        new Date(now)
-      )
+      // Save final interval only if timer is not idle
+      if (timerState !== 'idle') {
+        await addInterval(
+          currentLogId,
+          timerState === 'studying',
+          new Date(startTime),
+          new Date(now)
+        )
+      }
 
       // Reset everything
       setTimerState('idle')

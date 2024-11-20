@@ -4,6 +4,8 @@ export interface StudyLog {
     category_id?: string;
     title: string;
     created_at: string;
+    category?: Category;
+    interval?: Interval[];
 }
 
 export interface Interval {
