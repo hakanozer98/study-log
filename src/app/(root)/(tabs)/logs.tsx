@@ -63,64 +63,74 @@ const Logs = () => {
                   </View>
                 )}
               </View>
+              <View>
+                <Text style={styles.dateText}>
+                  {format(new Date(log.created_at), 'EEEE')}
+                </Text>
+                <Text style={styles.dateText}>
+                  {format(new Date(log.created_at), 'dd/MM/yyyy')}
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.logTitle}>{log.title}</Text>
+            <View style={styles.intervalsContainer}>
+              {log.interval && (
+                <View style={styles.intervals}>
+                  {log.interval.map((interval) => (
+                    <View
+                      key={interval.id}
+                      style={[
+                        styles.intervalCard,
+                        {
+                          backgroundColor: interval.is_study
+                            ? colors.secondaryContainer
+                            : colors.tertiaryContainer,
+                        },
+                      ]}
+                    >
+                      <MaterialCommunityIcons 
+                        name={interval.is_study ? "book-open-variant" : "coffee"} 
+                        size={20} 
+                        color={interval.is_study ? colors.onSecondaryContainer : colors.onTertiaryContainer} 
+                      />
+                      <View style={styles.intervalInfo}>
+                        <Text style={[
+                          styles.intervalTime,
+                          {
+                            color: interval.is_study 
+                              ? colors.onSecondaryContainer 
+                              : colors.onTertiaryContainer
+                          }
+                        ]}>
+                          {format(new Date(interval.start_time), 'HH:mm:ss')} -{' '}
+                          {format(new Date(interval.end_time), 'HH:mm:ss')}
+                        </Text>
+                        <Text style={[
+                          styles.intervalDuration,
+                          {
+                            color: interval.is_study 
+                              ? colors.onSecondaryContainer 
+                              : colors.onTertiaryContainer
+                          }
+                        ]}>
+                          {formatDuration(
+                            Math.round(differenceInMilliseconds(
+                              new Date(interval.end_time), 
+                              new Date(interval.start_time)
+                            ) / 1000)
+                          )}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
               {log.interval && (
                 <Text style={styles.totalDuration}>
                   Total: {formatDuration(calculateTotalDuration(log.interval))}
                 </Text>
               )}
             </View>
-            <Text style={styles.logTitle}>{log.title}</Text>
-            {log.interval && (
-              <View style={styles.intervals}>
-                {log.interval.map((interval) => (
-                  <View
-                    key={interval.id}
-                    style={[
-                      styles.intervalCard,
-                      {
-                        backgroundColor: interval.is_study
-                          ? colors.secondaryContainer
-                          : colors.tertiaryContainer,
-                      },
-                    ]}
-                  >
-                    <MaterialCommunityIcons 
-                      name={interval.is_study ? "book-open-variant" : "coffee"} 
-                      size={20} 
-                      color={interval.is_study ? colors.onSecondaryContainer : colors.onTertiaryContainer} 
-                    />
-                    <View style={styles.intervalInfo}>
-                      <Text style={[
-                        styles.intervalTime,
-                        {
-                          color: interval.is_study 
-                            ? colors.onSecondaryContainer 
-                            : colors.onTertiaryContainer
-                        }
-                      ]}>
-                        {format(new Date(interval.start_time), 'HH:mm:ss')} -{' '}
-                        {format(new Date(interval.end_time), 'HH:mm:ss')}
-                      </Text>
-                      <Text style={[
-                        styles.intervalDuration,
-                        {
-                          color: interval.is_study 
-                            ? colors.onSecondaryContainer 
-                            : colors.onTertiaryContainer
-                        }
-                      ]}>
-                        {formatDuration(
-                          Math.round(differenceInMilliseconds(
-                            new Date(interval.end_time), 
-                            new Date(interval.start_time)
-                          ) / 1000)
-                        )}
-                      </Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
           </View>
         ))}
       </ScrollView>
@@ -152,7 +162,7 @@ const styles = StyleSheet.create({
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 12,
   },
   categoryWrapper: {
@@ -178,8 +188,12 @@ const styles = StyleSheet.create({
     color: colors.onSurfaceVariant,
     marginBottom: 12,
   },
+  intervalsContainer: {
+    gap: 8,
+  },
   intervals: {
     gap: 8,
+    marginBottom: 8,
   },
   intervalCard: {
     padding: 12,
@@ -196,6 +210,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.onSurfaceVariant,
     fontWeight: '500',
+    textAlign: 'right',
   },
   intervalInfo: {
     flex: 1,
@@ -205,6 +220,11 @@ const styles = StyleSheet.create({
   },
   intervalDuration: {
     fontSize: 12,
+    fontWeight: '500',
+  },
+  dateText: {
+    fontSize: 12,
+    color: colors.onSurfaceVariant,
     fontWeight: '500',
   },
 })
