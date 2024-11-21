@@ -43,7 +43,10 @@ const Logs = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Study Logs</Text>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+      >
         {logs.map((log) => (
           <Pressable
             key={log.id}
@@ -154,7 +157,11 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   scrollView: {
-    padding: 16,
+    paddingHorizontal: 16,
+  },
+  scrollViewContent: {
+    paddingVertical: 16,
+    paddingBottom: 80, // Add extra padding for bottom bar
   },
   card: {
     backgroundColor: colors.elevation.level1,
