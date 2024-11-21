@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, StyleSheet, View, Text, Pressable } from 'react-native'
+import { StyleSheet, View, Text, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '../../lib/supabase'
 import { colors } from '../../theme/colors'
@@ -9,12 +9,18 @@ import { Link } from 'expo-router'
 import { makeRedirectUri } from "expo-auth-session";
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as Linking from 'expo-linking'
+import { Snackbar } from '../../components/Snackbar'
 
 const SignUp = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'info' as SnackbarTypes })
   const redirectTo = makeRedirectUri()
+
+  const showSnackbar = (message: string, variant: SnackbarTypes = 'info' as SnackbarTypes) => {
+    setSnackbar({ visible: true, message, variant })
+  }
 
   const createSessionFromUrl = async (url: string) => {
     const { params, errorCode } = QueryParams.getQueryParams(url);
@@ -50,9 +56,9 @@ const SignUp = () => {
       },
     })
 
-    if (error) Alert.alert(error.message)
+    if (error) showSnackbar(error.message, 'error')
     else {
-      Alert.alert('Check your email for the confirmation link!')
+      showSnackbar('Check your email for the confirmation link!', 'success')
     }
     setLoading(false)
   }
@@ -95,6 +101,12 @@ const SignUp = () => {
           </Link>
         </View>
       </View>
+      <Snackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        variant={snackbar.variant}
+        onDismiss={() => setSnackbar(prev => ({ ...prev, visible: false }))}
+      />
     </SafeAreaView>
   )
 }

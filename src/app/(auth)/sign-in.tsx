@@ -9,12 +9,18 @@ import { Link, router } from 'expo-router'
 import { makeRedirectUri } from 'expo-auth-session'
 import * as QueryParams from "expo-auth-session/build/QueryParams";
 import * as Linking from 'expo-linking'
+import { Snackbar } from '../../components/Snackbar'
 
 const SignIn = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'error' as SnackbarTypes })
   const redirectTo = makeRedirectUri()
+
+  const showSnackbar = (message: string, variant: SnackbarTypes = 'error' as SnackbarTypes) => {
+    setSnackbar({ visible: true, message, variant })
+  }
 
   const createSessionFromUrl = async (url: string) => {
     const { params, errorCode } = QueryParams.getQueryParams(url);
@@ -45,13 +51,13 @@ const SignIn = () => {
       password: password,
     })
 
-    if (error) Alert.alert(error.message)
+    if (error) showSnackbar(error.message)
     setLoading(false)
   }
 
   async function forgotPassword() {
     if (!email) {
-      Alert.alert('Please enter your email address')
+      showSnackbar('Please enter your email address')
       return
     }
     setLoading(true)
@@ -60,9 +66,9 @@ const SignIn = () => {
       { redirectTo: redirectTo }
     )
     if (error) {
-      Alert.alert(error.message)
+      showSnackbar(error.message)
     } else {
-      Alert.alert('Password reset email sent')
+      showSnackbar('Password reset email sent', 'success')
     }
     setLoading(false)
   }
@@ -108,6 +114,12 @@ const SignIn = () => {
           </Link>
         </View>
       </View>
+      <Snackbar
+        visible={snackbar.visible}
+        message={snackbar.message}
+        variant={snackbar.variant}
+        onDismiss={() => setSnackbar(prev => ({ ...prev, visible: false }))}
+      />
     </SafeAreaView>
   )
 }

@@ -1,0 +1,1 @@
+type SnackbarTypes = "success" | "error" | "info";
