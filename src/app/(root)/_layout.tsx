@@ -14,6 +14,7 @@ const RootLayout = () => {
         <Stack.Screen name='(tabs)' />
         <Stack.Screen name='categories' />
         <Stack.Screen name='add-category' />
+        <Stack.Screen name='log-details' />
     </Stack>
   )
 }

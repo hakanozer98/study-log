@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '@/src/lib/supabase'
@@ -6,7 +6,7 @@ import { StudyLog, Interval, Category } from '@/src/types/database'
 import { colors } from '@/src/theme/colors'
 import { format, differenceInSeconds, differenceInMilliseconds } from 'date-fns'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { useFocusEffect } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 
 const formatDuration = (seconds: number) => {
   const hours = Math.floor(seconds / 3600)
@@ -45,15 +45,19 @@ const Logs = () => {
       <Text style={styles.title}>Study Logs</Text>
       <ScrollView style={styles.scrollView}>
         {logs.map((log) => (
-          <View key={log.id} style={styles.card}>
+          <Pressable
+            key={log.id}
+            style={styles.card}
+            onPress={() => router.navigate({pathname: '/log-details', params: {logId: log.id}})}
+          >
             <View style={styles.cardHeader}>
               <View style={styles.categoryWrapper}>
                 {log.category ? (
                   <View style={[styles.categoryBadge, { backgroundColor: log.category.color }]}>
-                    <MaterialCommunityIcons 
-                      name={log.category.icon_name as any} 
-                      size={16} 
-                      color={colors.background} 
+                    <MaterialCommunityIcons
+                      name={log.category.icon_name as any}
+                      size={16}
+                      color={colors.background}
                     />
                     <Text style={styles.categoryText}>{log.category.name}</Text>
                   </View>
@@ -88,17 +92,17 @@ const Logs = () => {
                         },
                       ]}
                     >
-                      <MaterialCommunityIcons 
-                        name={interval.is_study ? "book-open-variant" : "coffee"} 
-                        size={20} 
-                        color={interval.is_study ? colors.onSecondaryContainer : colors.onTertiaryContainer} 
+                      <MaterialCommunityIcons
+                        name={interval.is_study ? "book-open-variant" : "coffee"}
+                        size={20}
+                        color={interval.is_study ? colors.onSecondaryContainer : colors.onTertiaryContainer}
                       />
                       <View style={styles.intervalInfo}>
                         <Text style={[
                           styles.intervalTime,
                           {
-                            color: interval.is_study 
-                              ? colors.onSecondaryContainer 
+                            color: interval.is_study
+                              ? colors.onSecondaryContainer
                               : colors.onTertiaryContainer
                           }
                         ]}>
@@ -108,14 +112,14 @@ const Logs = () => {
                         <Text style={[
                           styles.intervalDuration,
                           {
-                            color: interval.is_study 
-                              ? colors.onSecondaryContainer 
+                            color: interval.is_study
+                              ? colors.onSecondaryContainer
                               : colors.onTertiaryContainer
                           }
                         ]}>
                           {formatDuration(
                             Math.round(differenceInMilliseconds(
-                              new Date(interval.end_time), 
+                              new Date(interval.end_time),
                               new Date(interval.start_time)
                             ) / 1000)
                           )}
@@ -131,7 +135,7 @@ const Logs = () => {
                 </Text>
               )}
             </View>
-          </View>
+          </Pressable>
         ))}
       </ScrollView>
     </SafeAreaView>
