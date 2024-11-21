@@ -211,8 +211,12 @@ const Timer = () => {
 
         <View style={styles.actionContainer}>
           <Pressable 
-            style={styles.categoryButton} 
+            style={[
+              styles.categoryButton,
+              { opacity: timerState !== 'idle' ? 0.5 : 1 }
+            ]} 
             onPress={() => {
+              if (timerState !== 'idle') return;
               if (selectedCategory) {
                 setSelectedCategory(null);
                 router.push('/(root)/(tabs)/timer');
@@ -229,7 +233,7 @@ const Timer = () => {
             <Text style={styles.categoryButtonText}>
               {selectedCategory ? selectedCategory.name : 'Add Category'}
             </Text>
-            {selectedCategory && (
+            {selectedCategory && timerState === 'idle' && (
               <MaterialCommunityIcons
                 name="close"
                 size={20}
