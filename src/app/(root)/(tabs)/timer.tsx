@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Alert, Pressable, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons'
 import { colors } from '../../../theme/colors'
 import { TimerState, TimerInterval } from '../../../types/timer'
 import { createStudyLog, addInterval } from '@/src/utils/supabase'
@@ -221,8 +221,8 @@ const Timer = () => {
               }
             }}
           >
-            <MaterialCommunityIcons
-              name={selectedCategory ? 'folder' : 'folder-plus'}
+            <FontAwesome
+              name={selectedCategory?.icon_name as any}
               size={20}
               color={colors.primary}
             />

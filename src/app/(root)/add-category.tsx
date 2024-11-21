@@ -1,21 +1,47 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '@/src/lib/supabase';
 import IconSelector from '@/src/components/IconSelector';
 import ColorPicker from '@/src/components/ColorPicker';
 import { router } from 'expo-router';
 import { colors } from '@/src/theme/colors';
+import { FontAwesome } from '@expo/vector-icons';
 
 const AddCategory = () => {
   const [categoryName, setCategoryName] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('');
-  const [selectedColor, setSelectedColor] = useState(''); // Changed initial value to empty string
+  const [selectedColor, setSelectedColor] = useState('#ffffff');
   const [errors, setErrors] = useState({
     categoryName: '',
     icon: '',
     color: ''
   });
+  const [iconModalVisible, setIconModalVisible] = useState(false);
+  const [isColorPickerVisible, setIsColorPickerVisible] = useState(false);
+
+  const handleCategoryNameChange = (text: string) => {
+    setCategoryName(text);
+    if (errors.categoryName) {
+      setErrors(prev => ({ ...prev, categoryName: '' }));
+    }
+  };
+
+  const handleIconSelect = (icon: string) => {
+    setSelectedIcon(icon);
+    if (errors.icon) {
+      setErrors(prev => ({ ...prev, icon: '' }));
+    }
+    setIconModalVisible(false);
+  };
+
+  const handleColorSelect = (color: string) => {
+    setSelectedColor(color);
+    if (errors.color) {
+      setErrors(prev => ({ ...prev, color: '' }));
+    }
+    setIsColorPickerVisible(false);
+  };
 
   const validateForm = () => {
     let isValid = true;
@@ -71,12 +97,12 @@ const AddCategory = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Add New Category</Text>
-        
-        <View style={styles.inputContainer}>          
+
+        <View style={styles.inputContainer}>
           <TextInput
             style={[styles.input, errors.categoryName && styles.inputError]}
             value={categoryName}
-            onChangeText={setCategoryName}
+            onChangeText={handleCategoryNameChange}
             placeholder="Enter category name"
           />
           {errors.categoryName ? (
@@ -84,34 +110,58 @@ const AddCategory = () => {
           ) : null}
         </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Icon</Text>
-          {errors.icon ? (
-            <Text style={styles.errorText}>{errors.icon}</Text>
-          ) : null}
-          <IconSelector 
-            selectedIcon={selectedIcon} 
-            onSelectIcon={setSelectedIcon} 
-          />
+        <View style={styles.cardContainer}>
+          <Pressable 
+            style={styles.card}
+            onPress={() => setIconModalVisible(true)}
+          >
+            <Text style={styles.cardLabel}>Icon</Text>
+            {selectedIcon ? (
+              <FontAwesome name={selectedIcon as any} size={32} color={colors.onPrimaryContainer} />
+            ) : (
+              <Text style={styles.placeholderText}>Select an icon</Text>
+            )}
+            {errors.icon ? (
+              <Text style={styles.errorText}>{errors.icon}</Text>
+            ) : null}
+          </Pressable>
+
+          <Pressable 
+            style={styles.card}
+            onPress={() => setIsColorPickerVisible(true)}
+          >
+            <Text style={styles.cardLabel}>Color</Text>
+            {selectedColor ? (
+              <View style={[styles.colorPreview, { backgroundColor: selectedColor }]} />
+            ) : (
+              <Text style={styles.placeholderText}>Select a color</Text>
+            )}
+            {errors.color ? (
+              <Text style={styles.errorText}>{errors.color}</Text>
+            ) : null}
+          </Pressable>
         </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Color</Text>
-          {errors.color ? (
-            <Text style={styles.errorText}>{errors.color}</Text>
-          ) : null}
-          <ColorPicker 
-            selectedColor={selectedColor} 
-            onSelectColor={setSelectedColor} 
-          />
-        </View>
+        <IconSelector
+          visible={iconModalVisible}
+          onClose={() => setIconModalVisible(false)}
+          selectedIcon={selectedIcon}
+          onSelectIcon={handleIconSelect}
+        />
 
-        <TouchableOpacity 
+        <ColorPicker
+          selectedColor={selectedColor}
+          onSelectColor={handleColorSelect}
+          isVisible={isColorPickerVisible}
+          onClose={() => setIsColorPickerVisible(false)}
+        />
+
+        <Pressable
           style={styles.button}
           onPress={handleCreateCategory}
         >
           <Text style={styles.buttonText}>Create Category</Text>
-        </TouchableOpacity>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -165,6 +215,35 @@ const styles = StyleSheet.create({
     color: 'red',
     fontSize: 12,
     marginVertical: 8,
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 20,
+  },
+  card: {
+    flex: 1,
+    backgroundColor: colors.primaryContainer,
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    gap: 8,
+  },
+  cardLabel: {
+    fontSize: 16,
+    color: colors.onPrimaryContainer,
+    fontWeight: 'bold',
+  },
+  placeholderText: {
+    color: colors.onPrimaryContainer,
+    opacity: 0.7,
+  },
+  colorPreview: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.outline,
   },
 });
 

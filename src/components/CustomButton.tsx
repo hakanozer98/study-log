@@ -1,6 +1,5 @@
-
 import React from 'react'
-import { Pressable, Text, StyleSheet } from 'react-native'
+import { Pressable, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native'
 import { colors } from '../theme/colors'
 
 interface CustomButtonProps {
@@ -8,20 +7,36 @@ interface CustomButtonProps {
   onPress: () => void
   disabled?: boolean
   variant?: 'primary' | 'secondary'
+  style?: ViewStyle
+  textStyle?: TextStyle
 }
 
-export const CustomButton = ({ title, onPress, disabled, variant = 'primary' }: CustomButtonProps) => {
+export const CustomButton = ({ 
+  title, 
+  onPress, 
+  disabled, 
+  variant = 'primary',
+  style,
+  textStyle 
+}: CustomButtonProps) => {
   return (
     <Pressable
       style={[
         styles.button,
         variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
         disabled && styles.disabled,
+        style,
       ]}
       onPress={onPress}
       disabled={disabled}
     >
-      <Text style={[styles.text, variant === 'primary' ? styles.primaryText : styles.secondaryText]}>
+      <Text 
+        style={[
+          styles.text, 
+          variant === 'primary' ? styles.primaryText : styles.secondaryText,
+          textStyle,
+        ]}
+      >
         {title}
       </Text>
     </Pressable>

@@ -1,53 +1,91 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Pressable, StyleSheet, Modal, Dimensions, Text } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons';
+import { FlashList } from '@shopify/flash-list';
 import { colors } from '../theme/colors';
-
-const icons = [
-  'book', 'code-brackets', 'food', 'dumbbell',
-  'music', 'pencil', 'run', 'basketball',
-  'camera', 'palette', 'calculator', 'cards'
-];
+import { icons } from '../consts/icons';
 
 interface IconSelectorProps {
+  visible: boolean;
+  onClose: () => void;
   selectedIcon: string;
   onSelectIcon: (icon: string) => void;
 }
 
-const IconSelector = ({ selectedIcon, onSelectIcon }: IconSelectorProps) => {
+const NUM_COLUMNS = 4;
+
+const IconSelector = ({ visible, onClose, selectedIcon, onSelectIcon }: IconSelectorProps) => {
+  const renderIcon = ({ item }: { item: string }) => (
+    <Pressable
+      key={item}
+      style={[
+        styles.iconButton,
+        selectedIcon === item && styles.selectedIcon
+      ]}
+      onPress={() => onSelectIcon(item)}
+    >
+      <FontAwesome
+        name={item as any}
+        size={20}
+        color={selectedIcon === item ? '#fff' : '#000'}
+      />
+    </Pressable>
+  );
+
   return (
-    <View style={styles.container}>
-      <View style={styles.iconGrid}>
-        {icons.map((iconName) => (
-          <TouchableOpacity
-            key={iconName}
-            style={[
-              styles.iconButton,
-              selectedIcon === iconName && styles.selectedIcon
-            ]}
-            onPress={() => onSelectIcon(iconName)}
-          >
-            <MaterialCommunityIcons
-              name={iconName as any}
-              size={24}
-              color={selectedIcon === iconName ? '#fff' : '#000'}
-            />
-          </TouchableOpacity>
-        ))}
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.header}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>Select Icon</Text>
+            </View>
+            <Pressable onPress={onClose} style={styles.closeButton}>
+              <FontAwesome name="close" size={20} color={colors.onSurface} />
+            </Pressable>
+          </View>
+          <FlashList
+            data={icons}
+            renderItem={renderIcon}
+            estimatedItemSize={50}
+            numColumns={NUM_COLUMNS}
+            horizontal={false}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.listContent}
+            extraData={selectedIcon}
+          />
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-  },
-  iconGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: colors.backdrop,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    height: 400,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    elevation: 5,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    padding: 0,
+  },
+  listContent: {
+    padding: 16,
   },
   iconButton: {
     width: 50,
@@ -56,9 +94,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     backgroundColor: colors.surfaceVariant,
+    margin: 8,
   },
   selectedIcon: {
     backgroundColor: colors.primary,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.outline,
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.onSurface,
+  },
+  closeButton: {
+    padding: 4,
   },
 });
 

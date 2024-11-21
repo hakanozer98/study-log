@@ -5,7 +5,34 @@ import { Category } from '@/src/types/database'
 import { supabase } from '@/src/lib/supabase'
 import { colors } from '@/src/theme/colors'
 import { router, useFocusEffect } from 'expo-router'
-import { MaterialIcons } from '@expo/vector-icons'
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons'
+
+const isColorLight = (color: string): boolean => {
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128;
+};
+
+const adjustColor = (color: string, amount: number): string => {
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+
+    const adjustComponent = (c: number) => {
+        const newC = c + amount;
+        return Math.min(255, Math.max(0, newC));
+    };
+
+    const rr = adjustComponent(r).toString(16).padStart(2, '0');
+    const gg = adjustComponent(g).toString(16).padStart(2, '0');
+    const bb = adjustComponent(b).toString(16).padStart(2, '0');
+
+    return `#${rr}${gg}${bb}`;
+};
 
 const Categories = () => {
     const [categories, setCategories] = useState<Category[]>([])
@@ -60,7 +87,16 @@ const Categories = () => {
                             pressed && styles.categoryItemPressed
                         ]}>
                         <View style={styles.leftContent}>
-                            <View style={[styles.colorDot, { backgroundColor: item.color }]} />
+                            <View style={[styles.iconContainer, { backgroundColor: item.color }]}>
+                                <FontAwesome 
+                                    name={item.icon_name as any} 
+                                    size={18} 
+                                    color={isColorLight(item.color) ? 
+                                        adjustColor(item.color, -40) : 
+                                        adjustColor(item.color, 100)
+                                    } 
+                                />
+                            </View>
                             <Text style={styles.categoryName}>{item.name}</Text>
                         </View>
                         <Pressable
@@ -131,12 +167,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    colorDot: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
-        marginRight: 12,
-    },
     categoryName: {
         fontSize: 18,
         color: colors.onSurfaceVariant,
@@ -151,6 +181,14 @@ const styles = StyleSheet.create({
     },
     categoryItemPressed: {
         opacity: 0.7,
+    },
+    iconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        marginRight: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 
