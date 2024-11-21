@@ -5,12 +5,38 @@ import { supabase } from '../../lib/supabase'
 import { colors } from '../../theme/colors'
 import { CustomInput } from '../../components/CustomInput'
 import { CustomButton } from '../../components/CustomButton'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
+import { makeRedirectUri } from 'expo-auth-session'
+import * as QueryParams from "expo-auth-session/build/QueryParams";
+import * as Linking from 'expo-linking'
 
 const SignIn = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const redirectTo = makeRedirectUri()
+
+  const createSessionFromUrl = async (url: string) => {
+    const { params, errorCode } = QueryParams.getQueryParams(url);
+
+    if (errorCode) throw new Error(errorCode);
+    const { access_token, refresh_token } = params;
+
+    if (!access_token) return;
+
+    const { data, error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token,
+    });
+    if (error) throw error;
+    router.navigate('(root)/reset-password')
+    return data.session;
+  };
+
+  const url = Linking.useURL()
+  if (url) {
+    createSessionFromUrl(url)
+  }
 
   async function signInWithEmail() {
     setLoading(true)
@@ -20,6 +46,24 @@ const SignIn = () => {
     })
 
     if (error) Alert.alert(error.message)
+    setLoading(false)
+  }
+
+  async function forgotPassword() {
+    if (!email) {
+      Alert.alert('Please enter your email address')
+      return
+    }
+    setLoading(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(
+      email,
+      { redirectTo: redirectTo }
+    )
+    if (error) {
+      Alert.alert(error.message)
+    } else {
+      Alert.alert('Password reset email sent')
+    }
     setLoading(false)
   }
 
@@ -45,6 +89,9 @@ const SignIn = () => {
             placeholder="Enter your password"
             secureTextEntry
           />
+          <Pressable onPress={forgotPassword}>
+            <Text style={styles.forgotPassword}>Forgot Password?</Text>
+          </Pressable>
           <CustomButton
             title="Sign In"
             onPress={signInWithEmail}
@@ -90,6 +137,14 @@ const styles = StyleSheet.create({
   },
   form: {
     gap: 16,
+  },
+  forgotPassword: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+    alignSelf: 'flex-end',
+    marginTop: -8,
+    marginBottom: 8,
   },
   navigation: {
     flexDirection: 'row',
