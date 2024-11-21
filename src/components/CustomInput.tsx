@@ -27,7 +27,7 @@ export const CustomInput = ({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={colors.onSurfaceVariant}
+        placeholderTextColor={colors.onSurfaceDisabled}
         secureTextEntry={secureTextEntry}
         autoCapitalize="none"
       />
