@@ -25,7 +25,10 @@ const Timer = () => {
 
   useEffect(() => {
     const fetchCategory = async () => {
-      if (!categoryId) return
+      if (!categoryId) {
+        setSelectedCategory(null)
+        return
+      }
       let { data: category, error } = await supabase
         .from('category')
         .select("*")
@@ -40,7 +43,9 @@ const Timer = () => {
       }
     }
     fetchCategory()
+  }, [categoryId])
 
+  useEffect(() => {
     let intervalId: NodeJS.Timeout
     if (timerState !== 'idle') {
       setCurrentTime(Date.now())
@@ -49,7 +54,7 @@ const Timer = () => {
       }, 1000)
     }
     return () => clearInterval(intervalId)
-  }, [timerState, categoryId])
+  }, [timerState])
 
   const handleTimerPress = async () => {
     const now = Date.now()
@@ -126,9 +131,9 @@ const Timer = () => {
       setIntervals([])
       setStartTime(0)
       setCurrentLogId(null)
-      setSelectedCategory(null)
       setTitle('')
-      router.replace('/(root)/(tabs)/timer')
+      // Navigate back to reset the screen state completely
+      router.push('/(root)/(tabs)/timer')
     } catch (error) {
       Alert.alert('Error', 'Failed to save final interval')
       console.error(error)
@@ -377,6 +382,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 24,
     gap: 8,
+    height: 40, // Add this line
   },
   categoryButtonText: {
     fontSize: 16,
