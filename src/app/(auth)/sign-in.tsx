@@ -35,9 +35,16 @@ const SignIn = () => {
       refresh_token,
     });
     if (error) throw error;
-    router.navigate('(root)/reset-password')
+    
+    // Check if this is a password reset or email confirmation
+    const isPasswordReset = url.includes('type=recovery');
+    if (isPasswordReset) {
+      router.navigate('(root)/reset-password');
+    } else {
+      router.navigate('(root)'); // Navigate to main app
+    }
     return data.session;
-  };
+};
 
   const url = Linking.useURL()
   if (url) {
