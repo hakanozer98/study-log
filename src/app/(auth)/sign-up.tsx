@@ -14,6 +14,7 @@ import { Snackbar } from '../../components/Snackbar'
 const SignUp = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(false)
   const [snackbar, setSnackbar] = useState({ visible: false, message: '', variant: 'info' as SnackbarTypes })
   const redirectTo = makeRedirectUri()
@@ -45,6 +46,20 @@ const SignUp = () => {
 
   async function signUpWithEmail() {
     setLoading(true)
+    
+    // Add validation
+    if (!username.trim()) {
+      showSnackbar('Name is required', 'error')
+      setLoading(false)
+      return
+    }
+
+    if (username.trim().length < 3) {
+      showSnackbar('Name must be at least 3 characters long', 'error')
+      setLoading(false)
+      return
+    }
+
     const {
       data: { session },
       error,
@@ -53,6 +68,9 @@ const SignUp = () => {
       password: password,
       options: {
         emailRedirectTo: redirectTo,
+        data: {
+          username: username
+        },
       },
     })
 
@@ -72,6 +90,12 @@ const SignUp = () => {
         </View>
 
         <View style={styles.form}>
+          <CustomInput
+            label="Name"
+            value={username}
+            onChangeText={setUsername}
+            placeholder="Enter your name"
+          />
           <CustomInput
             label="Email"
             value={email}
