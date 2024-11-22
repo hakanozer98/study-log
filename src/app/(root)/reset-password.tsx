@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Alert, StyleSheet, View, Text } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { Alert, StyleSheet, View, Text, BackHandler } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { supabase } from '../../lib/supabase'
 import { colors } from '../../theme/colors'
@@ -12,24 +12,38 @@ const ResetPassword = () => {
     const [confirmPassword, setConfirmPassword] = useState('')
     const [loading, setLoading] = useState(false)
 
+    useEffect(() => {
+        // Add event listener for hardware back button (Android)
+        const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+                supabase.auth.signOut()
+                return true // Prevents back navigation
+            }
+        )
+
+        return () => {
+            backHandler.remove()
+        }
+    }, [])
+
     async function resetPassword() {
         if (newPassword !== confirmPassword) {
-            Alert.alert('Passwords do not match')
-            return
+            Alert.alert('Passwords do not match');
+            return;
         }
 
-        setLoading(true)
+        setLoading(true);
         const { error } = await supabase.auth.updateUser({
             password: newPassword
-        })
+        });
 
         if (error) {
-            Alert.alert(error.message)
+            Alert.alert(error.message);
         } else {
-            const { error } = await supabase.auth.signOut()
-            Alert.alert('Password reset successfully')
+            const { error } = await supabase.auth.signOut();
         }
-        setLoading(false)
+        setLoading(false);
     }
 
     return (
